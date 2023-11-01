@@ -37,17 +37,18 @@ public class WifiSerial {
 
     private connectionTask theTask;
 
-    String ipAddress, port;
+    public static String ipAddress, port;
 
-    public interface OnBluetoothSerialListener{
+    public interface ConnectionListener {
         int rawReading(int bufferSize, byte[] buffer);
         void weighBridgeValue(String rawValue, String value);
         void disconnect();
+        void successConnect(String ip, int port);
         void indicatorUnplugged();
     }
 
     private static WifiSerial instance;
-    private static OnBluetoothSerialListener mListener;
+    private static ConnectionListener mListener;
     private WifiSerial(){};
 
     public static WifiSerial getInstance() {
@@ -58,7 +59,7 @@ public class WifiSerial {
         return instance;
     }
 
-    public void setListener(OnBluetoothSerialListener listener) {
+    public void setListener(ConnectionListener listener) {
         mListener = listener;
     }
 
@@ -173,6 +174,8 @@ public class WifiSerial {
             serialReader = new SerialReader();
             serialReader.start();
 
+            mListener.successConnect(ipAddress, Integer.parseInt(port));
+
             //send connection message
 //                    Intent intent = new Intent(BLUETOOTH_CONNECTED);
 //                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
@@ -274,10 +277,10 @@ public class WifiSerial {
 
                             try {
                                 newFormat = str.split(Pattern.quote("||||"))[1];
-                                newFormat = newFormat.substring(1, 6);
+                                newFormat = newFormat.substring(2, 8);
                             } catch (Exception e) {
                                 newFormat = str.split(Pattern.quote("|||"))[1];
-                                newFormat = newFormat.substring(1, 6);
+                                newFormat = newFormat.substring(1, 8);
                             }
 
 //                            Log.e("wifiserial", str);

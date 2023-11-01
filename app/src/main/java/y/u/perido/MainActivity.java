@@ -2,27 +2,15 @@ package y.u.perido;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
-import android.net.wifi.WifiManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import org.w3c.dom.Text;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
-
-public class MainActivity extends AppCompatActivity implements WifiSerial.OnBluetoothSerialListener, WifiSerial2.OnBluetoothSerialListener2 {
+public class MainActivity extends AppCompatActivity implements WifiSerial.ConnectionListener, WifiSerial2.ConnectionListener {
 
     TextView outputView1, outputView2;
     private TextInputEditText ip1, port1, ip2, port2;
@@ -78,6 +66,16 @@ public class MainActivity extends AppCompatActivity implements WifiSerial.OnBlue
     @Override
     public void disconnect() {
 
+    }
+
+    @Override
+    public void successConnect(String ip, int port) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getApplicationContext(), "Connected with " + ip + ":" + port, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     @Override

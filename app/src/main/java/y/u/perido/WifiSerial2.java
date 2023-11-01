@@ -37,17 +37,18 @@ public class WifiSerial2 {
 
     private connectionTask theTask;
 
-    String ipAddress, port;
+    public static String ipAddress, port;
 
-    public interface OnBluetoothSerialListener2{
+    public interface ConnectionListener {
         int rawReading2(int bufferSize, byte[] buffer);
         void weighBridgeValue2(String rawValue, String value);
         void disconnect2();
+        void successConnect(String ip, int port);
         void indicatorUnplugged2();
     }
 
     private static WifiSerial2 instance;
-    private static OnBluetoothSerialListener2 mListener;
+    private static ConnectionListener mListener;
     private WifiSerial2(){};
 
     public static WifiSerial2 getInstance() {
@@ -58,7 +59,7 @@ public class WifiSerial2 {
         return instance;
     }
 
-    public void setListener(OnBluetoothSerialListener2 listener) {
+    public void setListener(ConnectionListener listener) {
         mListener = listener;
     }
 
@@ -173,6 +174,8 @@ public class WifiSerial2 {
             serialReader = new SerialReader();
             serialReader.start();
 
+            mListener.successConnect(ipAddress, Integer.parseInt(port));
+
             //send connection message
 //                    Intent intent = new Intent(BLUETOOTH_CONNECTED);
 //                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
@@ -274,10 +277,10 @@ public class WifiSerial2 {
 
                             try {
                                 newFormat = str.split(Pattern.quote("||||"))[1];
-                                newFormat = newFormat.substring(1, 6);
+                                newFormat = newFormat.substring(2, 8);
                             } catch (Exception e) {
                                 newFormat = str.split(Pattern.quote("|||"))[1];
-                                newFormat = newFormat.substring(1, 6);
+                                newFormat = newFormat.substring(1, 8);
                             }
 
 //                            Log.e("wifiserial", str);
